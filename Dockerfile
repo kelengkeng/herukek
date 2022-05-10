@@ -1,17 +1,13 @@
-FROM harshpreets63/random:simple
+FROM harshpreets63/cutie:sweet
 
 WORKDIR /usr/src/app
-RUN chmod 777 /usr/src/app
-
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-COPY extract /usr/local/bin
-COPY pextract /usr/local/bin
-RUN chmod +x /usr/local/bin/extract && chmod +x /usr/local/bin/pextract
 COPY . .
-COPY .netrc /root/.netrc
-RUN chmod 600 /usr/src/app/.netrc
-RUN chmod +x aria.sh
 
-CMD ["bash","start.sh"]
+RUN set -ex \
+    && chmod 777 /usr/src/app \ 
+    && cp .netrc /root/.netrc \
+    && chmod 600 /usr/src/app/.netrc \
+    && cp extract pextract /usr/local/bin \
+    && chmod +x aria.sh /usr/local/bin/extract /usr/local/bin/pextract
+RUN pip3 install -U pyrogram
+CMD ["bash", "start.sh"]
