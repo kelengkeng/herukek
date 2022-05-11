@@ -1,20 +1,17 @@
-# Base Image
-FROM ghcr.io/iamliquidx/mirrorx@sha256:96c42f38288d4211c4b3071816b9c2a3f11cf0a47983b47cc72c9281a1f11b55
+FROM breakdowns/mega-sdk-python:latest
 
-# Home Dir
-WORKDIR /app/
+WORKDIR /usr/src/app
+RUN chmod 777 /usr/src/app
 
-# Mirror Bot files and requirements
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY extract /usr/local/bin
+COPY pextract /usr/local/bin
+RUN chmod +x /usr/local/bin/extract && chmod +x /usr/local/bin/pextract
 COPY . .
-RUN mv extract /usr/local/bin && \
-    mv pextract /usr/local/bin && \
-    chmod +x /usr/local/bin/extract && \
-    chmod +x /usr/local/bin/pextract && \
-    wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht.dat -O /app/dht.dat && \
-    wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht6.dat -O /app/dht6.dat && \
-    mkdir -p /root/ && \
-    mv netrc /root/.netrc && \
-    pip3 -q install --no-cache-dir -r requirements.txt
+COPY .netrc /root/.netrc
+RUN chmod 600 /usr/src/app/.netrc
+RUN chmod +x aria.sh
 
-# Script Which Starts the Bot
-CMD ["bash", "start.sh"]
+CMD ["bash","start.sh"]
